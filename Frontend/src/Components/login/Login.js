@@ -21,12 +21,12 @@ export default function Login({ handleSignIn }) {
         { username, password }
       );
 
+      console.log("Login response:", result.data);
       if (result.data.success) {
         handleSignIn(true, username);
       } else {
         setError("Invalid password");
       }
-
     } catch (err) {
       console.error("Login error:", err);
       setError("Server error. Try again.");

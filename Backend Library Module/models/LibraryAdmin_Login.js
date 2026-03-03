@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
-const {Schema} = mongoose;
-
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 const Lib_Admin_Login_Schema = new Schema(
     {
         Lib_Admin_username:{
