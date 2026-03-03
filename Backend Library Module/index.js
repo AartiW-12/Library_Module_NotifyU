@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 5002;
+const PORT = process.env.PORT || 5002;
 const cors = require('cors');
 const mongoDB = require('./ConnectionMongoDB');
 const bodyParser = require('body-parser');
@@ -8,9 +8,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
