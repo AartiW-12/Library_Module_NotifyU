@@ -16,7 +16,7 @@ router.post("/library_admin_login", async (req, res) => {
 
     const admin = await AdminModel.findOne({
       Lib_Admin_username: username,
-      Lib_Admin_password: password   // ✅ correct field
+      password: password
     });
 
     if (admin) {
@@ -45,7 +45,7 @@ router.post("/library_admin_update_password", async (req, res) => {
 
     const result = await AdminModel.updateOne(
       { Lib_Admin_username: "Admin-library" },
-      { $set: { Lib_Admin_password: password } }   // ✅ correct field
+      { $set: { password: password } }  
     );
 
     return res.json({ success: result.modifiedCount === 1 });
@@ -76,9 +76,9 @@ router.post("/library_admin_check_current_password", async (req, res) => {
       return res.json({ success: false });
     }
 
-    if (admin.Lib_Admin_password === curPassword) {
-      return res.json({ success: true });
-    }
+    if (admin.password === curPassword) {
+  return res.json({ success: true });
+}
 
     return res.json({ success: false });
 
