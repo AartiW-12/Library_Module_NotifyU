@@ -9,7 +9,7 @@ export default function Books() {
   // 🔹 Get All Books
   const getAllBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:5002/api/get_books");
+      const res = await axios.get("https://library-module-notifyu.onrender.com/api/get_books");
       console.log("Books fetched:", res.data);
       const books = Array.isArray(res.data) ? res.data : res.data.data;
       return books.map(book => [book.bookid, book.name, book.author]);
@@ -33,7 +33,7 @@ export default function Books() {
   // 🔹 Add a Book
   const addNewBook = async (book) => {
     try {
-      const res = await axios.post("http://localhost:5002/api/add_single_book", { book });
+      const res = await axios.post("https://library-module-notifyu.onrender.com/api/add_single_book", { book });
       return res.data.success;
     } catch (err) {
       console.error("Add Book Error:", err);
@@ -46,7 +46,7 @@ export default function Books() {
     try {
       const formData = new FormData();
       formData.append("booksFile", booksFile, booksFile.name);
-      const res = await axios.post("http://localhost:5002/api/add_book_rack", formData, {
+      const res = await axios.post("https://library-module-notifyu.onrender.com/api/add_book_rack", formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       return res.data.success;
@@ -60,7 +60,7 @@ export default function Books() {
   const removeBook = async (bookID, bookName) => {
     try {
       if (!bookID && !bookName) return false;
-      const res = await axios.delete("http://localhost:5002/api/removebook", {
+      const res = await axios.delete("https://library-module-notifyu.onrender.com/api/removebook", {
         data: { bookid: bookID, name: bookName }
       });
       return res.data.success;
