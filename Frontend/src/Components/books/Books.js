@@ -7,7 +7,7 @@ export default function Books() {
   // 🔹 Add a Book
   const addNewBook = async (book) => {
     try {
-      const response = await axios.post("http://localhost:5002/api/add_single_book", { book });
+      const response = await axios.post("https://library-module-notifyu.onrender.com/api/add_single_book", { book });
       console.log(response.data.success);
       return response.data.success;
     } catch (err) {
@@ -21,7 +21,7 @@ export default function Books() {
     try {
       const formData = new FormData();
       formData.append("booksFile", booksFile, booksFile.name);
-      const response = await axios.post("http://localhost:5002/api/add_book_rack", formData, {
+      const response = await axios.post("https://library-module-notifyu.onrender.com/api/add_book_rack", formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       console.log(response.data.success);
@@ -37,7 +37,7 @@ export default function Books() {
     try {
       if (!bookID && !bookName) return false;
 
-      const response = await axios.delete("http://localhost:5002/api/removebook", {
+      const response = await axios.delete("https://library-module-notifyu.onrender.com/api/removebook", {
         data: { bookid: bookID, name: bookName }
       });
       return response.data.success;
@@ -50,7 +50,7 @@ export default function Books() {
   // 🔹 Get All Books
   const getAllBooks = async () => {
     try {
-      const response = await axios.get("http://localhost:5002/api/get_books");
+      const response = await axios.get("https://library-module-notifyu.onrender.com/api/get_books");
       console.log("Books fetched:", response.data);
       return response.data.map(book => [book.bookid, book.name, book.author]);
     } catch (err) {

@@ -33,8 +33,8 @@ export default function IssuedBooks() {
       const type = getSearchKeyType(searchKey);
       const url =
         type === "PRN"
-          ? "http://localhost:5002/api/get_issued_book_by_PRN"
-          : "http://localhost:5002/api/get_issued_book_by_BookID";
+          ? "https://library-module-notifyu.onrender.com/api/get_issued_book_by_PRN"
+          : "https://library-module-notifyu.onrender.com/api/get_issued_book_by_BookID";
 
       const response = await axios.post(url, { key: searchKey });
       setIssuedList(response.data || []);
@@ -52,7 +52,7 @@ export default function IssuedBooks() {
     }
 
     try {
-      const response = await axios.post("http://localhost:5002/api/lib_Issue_book", {
+      const response = await axios.post("https://library-module-notifyu.onrender.com/api/lib_Issue_book", {
         bookid: bookId,
         bookname: bookName,
         studentid: studentId,
