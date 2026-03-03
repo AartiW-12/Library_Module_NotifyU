@@ -1,0 +1,77 @@
+body{
+    background: rgb(255, 255, 255);
+}
+body::-webkit-scrollbar{
+    display: none;
+}
+
+.navbar{
+    height: auto;
+    width: 100%;
+    color: rgb(255, 255, 255);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background: rgb(0, 70, 89);
+}
+.brandBG{
+    width: 400px;
+    height: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+.brand{
+    font-size: 20px;
+    color: rgb(252, 190, 66);
+    font-family: "Copperplate Gothic";
+    cursor: default;
+}
+.linksBG{
+    width: 700px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+.link{
+    margin-left: 14px;
+    margin-right: 14px;
+    text-decoration: none;
+    color: rgb(218, 218, 218);
+    padding: 4px;
+    border: 1px solid rgb(0, 70, 89);
+}
+.link:hover{
+    text-decoration: none;
+    color: white;
+    border: 1px solid rgb(0, 70, 89);
+    transition: 0.4s;
+}
+.linkActive{
+    color: rgb(0, 70, 89);;
+    border: 1px solid white;
+    border-radius: 7px;
+    background: white;
+    transition: .4s;
+}
+.linkActive:hover{
+    color: rgb(0, 70, 89);;
+}
+
+.logoutBG{
+    height: 70px;
+    width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;    
+}
+.logoutBTN{
+    color: rgb(218, 218, 218);
+    cursor: pointer;
+}
+.logoutBTN:hover{
+    color: white;
+}
