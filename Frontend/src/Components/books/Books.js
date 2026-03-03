@@ -4,12 +4,37 @@ import axios from 'axios';
 
 export default function Books() {
 
+  const [response, setresponse] = useState([]);
+
+  // 🔹 Get All Books
+  const getAllBooks = async () => {
+    try {
+      const res = await axios.get("http://localhost:5002/api/get_books");
+      console.log("Books fetched:", res.data);
+      const books = Array.isArray(res.data) ? res.data : res.data.data;
+      return books.map(book => [book.bookid, book.name, book.author]);
+    } catch (err) {
+      console.error("Error fetching books:", err);
+      return [];
+    }
+  }
+
+  // 🔹 Reusable fetchBooks
+  const fetchBooks = async () => {
+    const books = await getAllBooks();
+    setresponse(books);
+  };
+
+  useEffect(() => {
+    fetchBooks();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // 🔹 Add a Book
   const addNewBook = async (book) => {
     try {
-      const response = await axios.post("https://library-module-notifyu.onrender.com/api/add_single_book", { book });
-      console.log(response.data.success);
-      return response.data.success;
+      const res = await axios.post("http://localhost:5002/api/add_single_book", { book });
+      return res.data.success;
     } catch (err) {
       console.error("Add Book Error:", err);
       return false;
@@ -21,11 +46,10 @@ export default function Books() {
     try {
       const formData = new FormData();
       formData.append("booksFile", booksFile, booksFile.name);
-      const response = await axios.post("https://library-module-notifyu.onrender.com/api/add_book_rack", formData, {
+      const res = await axios.post("http://localhost:5002/api/add_book_rack", formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      console.log(response.data.success);
-      return response.data.success;
+      return res.data.success;
     } catch (err) {
       console.error("Add Rack Error:", err);
       return false;
@@ -36,28 +60,15 @@ export default function Books() {
   const removeBook = async (bookID, bookName) => {
     try {
       if (!bookID && !bookName) return false;
-
-      const response = await axios.delete("https://library-module-notifyu.onrender.com/api/removebook", {
+      const res = await axios.delete("http://localhost:5002/api/removebook", {
         data: { bookid: bookID, name: bookName }
       });
-      return response.data.success;
+      return res.data.success;
     } catch (err) {
       console.error("Remove book error:", err);
       return false;
     }
   };
-
-  // 🔹 Get All Books
-  const getAllBooks = async () => {
-    try {
-      const response = await axios.get("https://library-module-notifyu.onrender.com/api/get_books");
-      console.log("Books fetched:", response.data);
-      return response.data.map(book => [book.bookid, book.name, book.author]);
-    } catch (err) {
-      console.error("Error fetching books:", err);
-      return [];
-    }
-  }
 
   const addABook = useRef(null);
   const addMultipleBooks = useRef(null);
@@ -100,7 +111,7 @@ export default function Books() {
     if (!name || !author || !bookid || !topic1 || !topic2 || !topic3) return;
 
     const newBook = { bookid, name, author, topic1, topic2, topic3 };
-    const success = await addNewBook(newBook); // 🔹 Await result
+    const success = await addNewBook(newBook);
 
     const target = document.getElementById("submitSingleBookBG");
     while (target.firstChild) target.removeChild(target.firstChild);
@@ -108,6 +119,7 @@ export default function Books() {
     if (success) {
       target.style.color = "rgb(4, 255, 0)";
       target.innerHTML = `Book ${name} added successfully!`;
+      await fetchBooks(); // 🔹 Refresh list
     } else {
       target.style.color = "rgb(255, 0, 0)";
       target.innerHTML = `Failed to add Book ${name}.`;
@@ -118,7 +130,6 @@ export default function Books() {
       target.appendChild(setSubmitBtn(true));
     }, 2000);
 
-    // Clear inputs
     document.getElementById("bookname").value = "";
     document.getElementById("author").value = "";
     document.getElementById("bookid").value = "";
@@ -153,6 +164,7 @@ export default function Books() {
     if (success) {
       target.style.color = "rgb(0, 255, 0)";
       target.innerHTML = `File ${file.name} uploaded successfully!`;
+      await fetchBooks(); // 🔹 Refresh list
     } else {
       target.style.color = "rgb(255, 0, 0)";
       target.innerHTML = `Failed to upload File ${file.name}`;
@@ -163,7 +175,6 @@ export default function Books() {
       target.appendChild(setFileSubmitBtn(true));
     }, 2000);
 
-    // Reset file input
     file = undefined;
     const inputMulti = document.getElementById("inputMultiBG");
     inputMulti.innerHTML = "";
@@ -203,19 +214,12 @@ export default function Books() {
       ? `Book with ID: ${bookID} removed successfully!`
       : `Failed to remove book with ID: ${bookID}`;
 
+    if (success) await fetchBooks(); // 🔹 Refresh list
+
     setTimeout(() => {
       target.innerHTML = `<div class='removeSubmit' onClick=${handleRemoveSubmit}>Submit</div>`;
     }, 2000);
   };
-
-  const [response, setresponse] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      const books = await getAllBooks();
-      setresponse(books);
-    };
-    fetchData();
-  }, []);
 
   return (
     <div className="booksParent">

@@ -11,19 +11,23 @@ router.post("/library_admin_login", async (req, res) => {
     if (!username || !password) {
       return res.json({ success: false, message: "Missing credentials" });
     }
-
+    console.log("Login attempt for username:", username);
+    console.log("Password received:", password);
     username = username.trim();
     password = password.trim();
 
     const admin = await AdminModel.findOne({ Lib_Admin_username: username });
 
+    if (!admin) {
+      console.log("Admin not found for username:", username);
+      return res.json({ success: false, message: "User not found" });
+    }
+
     console.log("Admin found:", admin);
-console.log("Password from DB:", admin.Lib_Admin_password);
-console.log("Password entered:", password);
+    console.log("Password from DB:", admin.Lib_Admin_password);
+    console.log("Password entered:", password);
 
-    if (!admin) return res.json({ success: false, message: "User not found" });
-
-    if (admin.Lib_Admin_password.trim() === password.trim()) {
+    if (admin.Lib_Admin_password.trim() === password) {
       return res.json({ success: true, message: "Login successful" });
     }
 

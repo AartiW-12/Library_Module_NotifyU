@@ -27,7 +27,7 @@ export default function Account({ handleSignIn }) {
     try {
       // 1️⃣ Check current password
       const checkRes = await axios.post(
-        "https://library-module-notifyu.onrender.com/api/library_admin_check_current_password",
+        "http://localhost:5002/api/library_admin_check_current_password",
         { curPassword: currentPassword }
       );
 
@@ -39,7 +39,7 @@ export default function Account({ handleSignIn }) {
 
       // 2️⃣ Update password
       const updateRes = await axios.post(
-        "https://library-module-notifyu.onrender.com/api/library_admin_update_password",
+        "http://localhost:5002/api/library_admin_update_password",
         { password: newPassword }
       );
 

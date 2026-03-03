@@ -8,6 +8,9 @@ const Lib_Admin_Login_Schema = new Schema(
         Lib_Admin_password:{
             type:String
         }
+    },
+    {
+        collection:"library_admin_logintbs"
     }
 );
 

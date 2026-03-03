@@ -7,6 +7,9 @@ const libraryBookSchema = new mongoose.Schema({
   topic1: { type: String },
   topic2: { type: String },
   topic3: { type: String },
+},
+{
+   collection: "librarybookinfotables" 
 });
 
 module.exports = mongoose.model('LibraryBookInfo', libraryBookSchema); // ⚠ match name
