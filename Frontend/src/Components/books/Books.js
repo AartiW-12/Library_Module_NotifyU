@@ -1,363 +1,293 @@
-import React, { useEffect, useRef, useState } from 'react'
-import './Books.css'
+import React, { useEffect, useRef, useState } from 'react';
+import './Books.css';
 import axios from 'axios';
 
 export default function Books() {
 
-  // Add a Book [Express JS]
+  // 🔹 Add a Book
   const addNewBook = async (book) => {
-    let response;
-
-    // express code goes here...
-    response = await axios.post("http://localhost:5002/api/add_single_book" , { book })
-
-    console.log(response.data.success);
-
-    return response.data.success;
+    try {
+      const response = await axios.post("http://localhost:5002/api/add_single_book", { book });
+      console.log(response.data.success);
+      return response.data.success;
+    } catch (err) {
+      console.error("Add Book Error:", err);
+      return false;
+    }
   }
-  // Upload a Books File: [Express JS]
+
+  // 🔹 Upload Books File
   const addNewRack = async (booksFile) => {
-    console.log("file is : ",booksFile);
-    let Response ;
-
-    // express code goes here...
-    Response = await axios.post("http://localhost:5002/api/add_book_rack" , booksFile  );
-    
-    console.log(Response);
-    console.log(Response.data.success);
-
-    return Response.data.success;
+    try {
+      const formData = new FormData();
+      formData.append("booksFile", booksFile, booksFile.name);
+      const response = await axios.post("http://localhost:5002/api/add_book_rack", formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      console.log(response.data.success);
+      return response.data.success;
+    } catch (err) {
+      console.error("Add Rack Error:", err);
+      return false;
+    }
   }
 
-  // removeBook: [Express JS]
-  const removeBook = async(bookID, bookName) => {
-    let response;
-    // express code goes here...
-    response = await axios.post("http://localhost:5002/api/remove_book" , { bookID, bookName });
-    console.log("Response : " + response.success);
-    console.log(typeof(response));
-    console.log(`deleting a book with ID: ${bookID} and Name: ${bookName}`);
+  // 🔹 Remove Book
+  const removeBook = async (bookID, bookName) => {
+    try {
+      if (!bookID && !bookName) return false;
+
+      const response = await axios.delete("http://localhost:5002/api/removebook", {
+        data: { bookid: bookID, name: bookName }
+      });
+      return response.data.success;
+    } catch (err) {
+      console.error("Remove book error:", err);
+      return false;
+    }
+  };
+
+  // 🔹 Get All Books
+  const getAllBooks = async () => {
+    try {
+      const response = await axios.get("http://localhost:5002/api/get_books");
+      console.log("Books fetched:", response.data);
+      return response.data.map(book => [book.bookid, book.name, book.author]);
+    } catch (err) {
+      console.error("Error fetching books:", err);
+      return [];
+    }
   }
-
-  // getAllBooks: [Express JS]
-  const getAllBooks =  async () => {
-    let response;
-    // // express code goes here...
-    response = await axios.post("http://localhost:5002/api/get_books");
-      // response = [["B-000", "Book one", "Author one"], ["B-001", "Book two", "Author two"], ["B-003", "Book three", "Author three"], ["B-004", "Book four", "Author four"], ["B-005", "Book five", "Author five"], ["B-006", "Book six", "Author six"], ["B-007", "Book seven", "Author seven"], ["B-008", "`Book seven", "Author `seven"], ["B-009", "Book nine", "Author nine"], ["B-010", "Book ten", "Author ten"], ["B-011", "Book eleven", "Author eleven"], ["B-012", "Book one twelve", "Author twelve"], ["B-013", "Book thirteen", "Author thirteen"], ["B-014", "Book fourteen", "Author fourteen"]];
-    console.log("Response " , response.data);
-    const bookList = response.data;
-    console.log(bookList);
-    return bookList;
-  }
-
-
 
   const addABook = useRef(null);
-  // handleABooks:
-  const handleABook = (e) => {
-    const targetOther = addMultipleBooks.current;
-    targetOther.style.display = "none";
-    const targetmain = addABook.current
-    targetmain.style.display = "flex";
-  }
-
   const addMultipleBooks = useRef(null);
-  // handleBooks:
-  const handleBooks = (e) => {
-    const targetOther = addABook.current;
-    targetOther.style.display = "none";
-    const targetmain = addMultipleBooks.current
-    targetmain.style.display = "flex";
 
+  const handleABook = () => {
+    if (addMultipleBooks.current) addMultipleBooks.current.style.display = "none";
+    if (addABook.current) addABook.current.style.display = "flex";
   }
 
-  // setSubmitBtn:
+  const handleBooks = () => {
+    if (addABook.current) addABook.current.style.display = "none";
+    if (addMultipleBooks.current) addMultipleBooks.current.style.display = "flex";
+  }
+
   const setSubmitBtn = (flg) => {
     if (flg) {
-      var btn = document.createElement("div");
+      const btn = document.createElement("div");
       btn.className = "submitSingleBook";
       btn.onclick = handleSingleBookSumbit;
       btn.innerHTML = "Submit";
       return btn;
-    }
-    else {
-      return (
-        <div className="submitSingleBook" onClick={handleSingleBookSumbit}>Submit</div>
-      )
+    } else {
+      return <div className="submitSingleBook" onClick={handleSingleBookSumbit}>Submit</div>;
     }
   }
 
-  // handleKeyDown:
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSingleBookSumbit();
-    }
+    if (e.key === "Enter") handleSingleBookSumbit();
   }
 
-  // handleSingleBookSumbit:
-  const handleSingleBookSumbit = (e) => {
+  // 🔹 Handle Single Book Submit
+  const handleSingleBookSumbit = async () => {
+    const name = document.getElementById("bookname").value;
+    const author = document.getElementById("author").value;
+    const bookid = document.getElementById("bookid").value;
+    const topic1 = document.getElementById("topic1").value;
+    const topic2 = document.getElementById("topic2").value;
+    const topic3 = document.getElementById("topic3").value;
 
-    var name = document.getElementById("bookname").value;
-    var author = document.getElementById("author").value;
-    var bookid = document.getElementById("bookid").value;
-    var topic1 = document.getElementById("topic1").value;
-    var topic2 = document.getElementById("topic2").value;
-    var topic3 = document.getElementById("topic3").value;
+    if (!name || !author || !bookid || !topic1 || !topic2 || !topic3) return;
 
-    if (name === "" || author === "" || bookid === "" || topic1 === "" || topic2 === "" || topic3 === "") return;
-    else {
-      document.getElementById("bookname").value = "";
-      document.getElementById("author").value = "";
-      document.getElementById("bookid").value = "";
-      document.getElementById("topic1").value = "";
-      document.getElementById("topic2").value = "";
-      document.getElementById("topic3").value = "";
-    }
-
-    let newBook = {
-      bookid: bookid,
-      name: name,
-      author: author,
-      topic1: topic1,
-      topic2: topic2,
-      topic3: topic3,
-    }
-
-    let success = addNewBook(newBook); // Express Js call.
+    const newBook = { bookid, name, author, topic1, topic2, topic3 };
+    const success = await addNewBook(newBook); // 🔹 Await result
 
     const target = document.getElementById("submitSingleBookBG");
-    while (target.firstChild) {
-      target.removeChild(target.firstChild);
-    }
+    while (target.firstChild) target.removeChild(target.firstChild);
 
     if (success) {
       target.style.color = "rgb(4, 255, 0)";
-      target.innerHTML = `Book ${name} added SuccessFully!`;
-      setTimeout(() => {
-        target.innerHTML = "";
-        target.appendChild(setSubmitBtn(true));
-      }, 2000);
-    }
-    else{
+      target.innerHTML = `Book ${name} added successfully!`;
+    } else {
       target.style.color = "rgb(255, 0, 0)";
-      target.innerHTML = `Failed to add Book ${name}. Try Again`;
-      setTimeout(() => {
-        target.innerHTML = "";
-        target.appendChild(setSubmitBtn(true));
-      }, 2000);
+      target.innerHTML = `Failed to add Book ${name}.`;
     }
 
+    setTimeout(() => {
+      target.innerHTML = "";
+      target.appendChild(setSubmitBtn(true));
+    }, 2000);
 
+    // Clear inputs
+    document.getElementById("bookname").value = "";
+    document.getElementById("author").value = "";
+    document.getElementById("bookid").value = "";
+    document.getElementById("topic1").value = "";
+    document.getElementById("topic2").value = "";
+    document.getElementById("topic3").value = "";
   }
 
-  // bookFileonChange:
+  // 🔹 Book file state
   let file = undefined;
-  // let filePicked = false;
-  const bookFileonChange = (e) => {
-    if (e.target.files[0] !== undefined) file = e.target.files[0];
-    else file = undefined;
-  }
+  const bookFileonChange = (e) => { file = e.target.files[0] || undefined; }
 
-  // setFileSubmitBtn:
   const setFileSubmitBtn = (flg) => {
     if (flg) {
-      var btn = document.createElement("div");
+      const btn = document.createElement("div");
       btn.className = "submitBookFile";
       btn.onclick = handleBookFileSumbit;
       btn.innerHTML = "Submit";
       return btn;
-    }
-    else {
-      return (
-        <div className="submitBookFile" onClick={handleBookFileSumbit}>Submit</div>
-      )
+    } else {
+      return <div className="submitBookFile" onClick={handleBookFileSumbit}>Submit</div>;
     }
   }
 
-  // handleBookFileSumbit:
-  const handleBookFileSumbit = () => {
-    if (file === undefined)return;
-    else {
+  const handleBookFileSumbit = async () => {
+    if (!file) return;
 
-      let success = addNewRack(file); // express js call.
+    const success = await addNewRack(file);
+    const target = document.getElementById("submitBooksFileBG");
+    while (target.firstChild) target.removeChild(target.firstChild);
 
-      const target = document.getElementById("submitBooksFileBG");
-      while (target.firstChild) {
-        target.removeChild(target.firstChild);
-      }
-
-      if(success){
-        target.style.color = "rgb(0, 255, 0)";
-        target.innerHTML = `File ${file.name} uploaded SuccessFully!`; 
-        setTimeout(() => {
-          target.innerHTML = "";
-          target.appendChild(setFileSubmitBtn(true));
-        }, 2000);
-      }
-      else{
-        target.style.color = "rgb(255, 0, 0)";
-        target.innerHTML = `Failed to uplod File ${file.name}`; 
-        setTimeout(() => {
-          target.innerHTML = "";
-          target.appendChild(setFileSubmitBtn(true));
-        }, 2000);
-      }
-      file = undefined;
+    if (success) {
+      target.style.color = "rgb(0, 255, 0)";
+      target.innerHTML = `File ${file.name} uploaded successfully!`;
+    } else {
+      target.style.color = "rgb(255, 0, 0)";
+      target.innerHTML = `Failed to upload File ${file.name}`;
     }
 
-    var target = document.getElementById("inputMultiBG");
-    target.removeChild(target.firstChild);
-    target.appendChild(setAddMultipleBooks(false));
+    setTimeout(() => {
+      target.innerHTML = "";
+      target.appendChild(setFileSubmitBtn(true));
+    }, 2000);
+
+    // Reset file input
+    file = undefined;
+    const inputMulti = document.getElementById("inputMultiBG");
+    inputMulti.innerHTML = "";
+    inputMulti.appendChild(setAddMultipleBooks(false));
   }
 
-  // setAddMultipleBooks:
   const setAddMultipleBooks = (flg) => {
-    if (flg) {
-      return (
-        <input type='file' className='inputBooksFile' onChange={bookFileonChange}></input>
-      )
-    }
-    else {
-      const child = document.createElement("input");
-      child.type = "file";
-      child.className = "inputBooksFile"
-      child.onchange = bookFileonChange;
-      return child;
-    }
+    if (flg) return <input type='file' className='inputBooksFile' onChange={bookFileonChange} />;
+    const child = document.createElement("input");
+    child.type = "file";
+    child.className = "inputBooksFile";
+    child.onchange = bookFileonChange;
+    return child;
   }
 
-
-
-  // setRemoveSubmit:
   const setRemoveSubmit = (flg) => {
     if (flg) {
-      let child = document.createElement("div");
-      child.innerHTML = "Submit"
+      const child = document.createElement("div");
+      child.innerHTML = "Submit";
       child.className = "removeSubmit";
       child.onclick = handleRemoveSubmit;
       return child;
-    }
-    else {
-      return (
-        <div className='removeSubmit' onClick={handleRemoveSubmit} >Submit</div>
-      )
-    }
+    } else return <div className="removeSubmit" onClick={handleRemoveSubmit}>Submit</div>;
   }
 
-  // handleemoveKeyDown:
-  const handleemoveKeyDown = (e) => {
-    if (e.key === "Enter") handleRemoveSubmit();
-  }
+  const handleemoveKeyDown = (e) => { if (e.key === "Enter") handleRemoveSubmit(); }
 
-  // handleRemoveSubmit:
-  const handleRemoveSubmit = () => {
-    let bookiD = document.getElementById("removeByID");
-    let bookName = document.getElementById("removeByName");
-    if (bookiD.value || bookName.value) {
-      let target = document.getElementById("submitRemoveBookBG");
-      target.removeChild(target.firstChild);
-      removeBook(bookiD.value, bookName.value) // Express JS Call.
-      target.innerHTML = `Book with Name: ${bookName.value} ID: ${bookiD.value} removed Successfully!`
-      setTimeout(() => {
-        target.innerHTML = "";
-        target.appendChild(setRemoveSubmit(true))
-      }, 2000);
-    }
-  }
+  const handleRemoveSubmit = async () => {
+    let bookID = document.getElementById("removeByID").value;
 
+    if (!bookID) return;
+
+    const success = await removeBook(bookID);
+
+    const target = document.getElementById("submitRemoveBookBG");
+    target.innerHTML = success
+      ? `Book with ID: ${bookID} removed successfully!`
+      : `Failed to remove book with ID: ${bookID}`;
+
+    setTimeout(() => {
+      target.innerHTML = `<div class='removeSubmit' onClick=${handleRemoveSubmit}>Submit</div>`;
+    }, 2000);
+  };
 
   const [response, setresponse] = useState([]);
   useEffect(() => {
-    const fetchData = async() => {
+    const fetchData = async () => {
       const books = await getAllBooks();
       setresponse(books);
     };
-
     fetchData();
-    // setresponse(getAllBooks);
-  }, [])
+  }, []);
 
   return (
-    <div>
-      <>
-        <div className="booksParent">
-          <div className="booksContainer" >
-            <div className="booksWorkContainer">
+    <div className="booksParent">
+      <div className="booksContainer">
+        <div className="booksWorkContainer"></div>
 
+        {/* Add Book Section */}
+        <div className="addBookContainer">
+          <div className="addBookTitle">Add New Books</div>
+          <div className="addBookOptionBG">
+            <span className="addBookbtn" onClick={handleABook}>Add a Book</span>
+            <span className="addBooksbtn" onClick={handleBooks}>Add Books</span>
+          </div>
+
+          <div ref={addABook} className="addSingleBook" id='addSingleBook'>
+            <div className="singleBookTitle">Add New One</div>
+            <input onKeyDown={handleKeyDown} id='bookname' className="bookName" placeholder='name/title...' />
+            <input onKeyDown={handleKeyDown} id='author' className="Author" placeholder='author...' />
+            <input onKeyDown={handleKeyDown} id='bookid' className="bookID" placeholder='book ID...' />
+            <input onKeyDown={handleKeyDown} id='topic1' className="topic1" placeholder='primary topic...(Java)' />
+            <input onKeyDown={handleKeyDown} id='topic2' className="topic2" placeholder='secondary topic...(Programming Lang.)' />
+            <input onKeyDown={handleKeyDown} id='topic3' className="topic3" placeholder='ternary topic...(IT)' />
+            <div className="submitSingleBookBG" id='submitSingleBookBG'>
+              {setSubmitBtn(false)}
             </div>
+          </div>
 
-            <div className="addBookContainer">
-              <div className="addBookTitle">Add New Books</div>
-              <div className="addBookOptionBG">
-                <span className="addBookbtn" onClick={handleABook} >Add a Book</span>
-                <span className="addBooksbtn" onClick={handleBooks} >Add Books</span>
-              </div>
-              <div ref={addABook} className="addSingleBook" id='addSingleBook'>
-                <div className="singleBookTitle">Add New One</div>
-                <input onKeyDown={handleKeyDown} id='bookname' className="bookName" placeholder='name/title...'></input>
-                <input onKeyDown={handleKeyDown} id='author' className="Author" placeholder='author...'></input>
-                <input onKeyDown={handleKeyDown} id='bookid' className="bookID" placeholder='book ID...'></input>
-                <input onKeyDown={handleKeyDown} id='topic1' className="topic1" placeholder='primary topic...(Java)'></input>
-                <input onKeyDown={handleKeyDown} id='topic2' className="topic2" placeholder='secondary topic...(Programming Lang.)'></input>
-                <input onKeyDown={handleKeyDown} id='topic3' className="topic3" placeholder='ternary topic...(IT)'></input>
-                <div className="submitSingleBookBG" id='submitSingleBookBG'>
-                  {setSubmitBtn(false)}
-                </div>
-              </div>
-
-              <div ref={addMultipleBooks} className="addMultipleBooks" id='addMultipleBooks'>
-                <div className="multipleBookTitle">Feed a Rack</div>
-                <div className="inputMultiBG" id="inputMultiBG">
-                  {setAddMultipleBooks(true)}
-                </div>
-                <div className="submitBooksFileBG" id='submitBooksFileBG'>
-                  {setFileSubmitBtn(false)}
-                </div>
-              </div>
+          <div ref={addMultipleBooks} className="addMultipleBooks" id='addMultipleBooks'>
+            <div className="multipleBookTitle">Feed a Rack</div>
+            <div className="inputMultiBG" id="inputMultiBG">
+              {setAddMultipleBooks(true)}
             </div>
-
-            <div className="removeBookContainer">
-              <div className="removeBookTitle">Remove Book</div>
-              <div className="removeBookInputBG">
-                <input type="text" id='removeByID' className="removeByID" onKeyDown={handleemoveKeyDown} placeholder='Enter Book ID' />
-                <div className="or">OR</div>
-                <input type="text" id='removeByName' className="removeByName" onKeyDown={handleemoveKeyDown} placeholder='Enter Book Name' />
-                <div className="submitRemoveBookBG" id='submitRemoveBookBG'>
-                  {setRemoveSubmit(false)}
-                </div>
-              </div>
-            </div>
-
-            <div className="showAllBooksContainer">
-              <div className="showBooksTitle">
-                Books
-              </div>
-              <div className="tableHeaderBG">
-                <div className="headerBookID">ID</div>
-                <div className="headerBookName">Name</div>
-                <div className="headerBookAuthor">Author</div>
-              </div>
-
-              <div className="tableContainer">
-                <table>
-                  <tbody>
-                    {
-                      response.map((record, idx) => (
-                        <tr key={idx} className='datarow'>
-                          <td className='dataID'>{record[0]}</td>
-                          <td className='dataName'>{record[1]}</td>
-                          <td className='dataAuthor'>{record[2]}</td>
-                        </tr>
-                      ))
-                    }
-                  </tbody>
-                </table>
-              </div>
+            <div className="submitBooksFileBG" id='submitBooksFileBG'>
+              {setFileSubmitBtn(false)}
             </div>
           </div>
         </div>
-      </>
+
+        {/* Remove Book Section */}
+        <div className="removeBookContainer">
+          <div className="removeBookTitle">Remove Book</div>
+          <div className="removeBookInputBG">
+            <input type="text" id='removeByID' className="removeByID" onKeyDown={handleemoveKeyDown} placeholder='Enter Book ID' />
+            <div className="submitRemoveBookBG" id='submitRemoveBookBG'>
+              {setRemoveSubmit(false)}
+            </div>
+          </div>
+        </div>
+
+        {/* Show Books */}
+        <div className="showAllBooksContainer">
+          <div className="showBooksTitle">Books</div>
+          <div className="tableHeaderBG">
+            <div className="headerBookID">ID</div>
+            <div className="headerBookName">Name</div>
+            <div className="headerBookAuthor">Author</div>
+          </div>
+          <div className="tableContainer">
+            <table>
+              <tbody>
+                {response.map((record, idx) => (
+                  <tr key={idx} className='datarow'>
+                    <td className='dataID'>{record[0]}</td>
+                    <td className='dataName'>{record[1]}</td>
+                    <td className='dataAuthor'>{record[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

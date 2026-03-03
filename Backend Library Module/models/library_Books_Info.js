@@ -1,27 +1,12 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
 
-const Lib_Books = new Schema(
-    {
-        bookid:{
-            type:String
-        },
-        name:{
-            type:String
-        },
-        author:{
-            type:String
-        },
-        topic1:{
-            type:String
-        },
-        topic2:{
-            type:String
-        },
-        topic3:{
-            type:String
-        }
-    }
-);
+const libraryBookSchema = new mongoose.Schema({
+  bookid: { type: String, required: true },
+  name: { type: String, required: true },
+  author: { type: String, required: true },
+  topic1: { type: String },
+  topic2: { type: String },
+  topic3: { type: String },
+});
 
-module.exports = mongoose.model("LibraryBookInfoTable",Lib_Books);
+module.exports = mongoose.model('LibraryBookInfo', libraryBookSchema); // ⚠ match name

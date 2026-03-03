@@ -3,11 +3,8 @@ const app = express();
 const PORT = process.env.PORT || 5002;
 const cors = require('cors');
 const mongoDB = require('./ConnectionMongoDB');
-const bodyParser = require('body-parser');
 
-app.use(bodyParser.json());
 app.use(express.json());
-
 app.use(cors());
 
 app.get('/', (req, res) => {
@@ -22,10 +19,10 @@ app.use('/api', require('./Routes/Lib_Issue_Book'));
 
 mongoDB()
   .then(() => {
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
     });
   })
-  .catch(() => {
-    console.log("❌ Server NOT started (MongoDB connection failed)");
+  .catch((err) => {
+    console.log("MongoDB connection failed:", err.message);
   });

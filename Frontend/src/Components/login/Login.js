@@ -1,60 +1,86 @@
-import React from 'react';
+import React, { useState } from "react";
+import axios from "axios";
 import "./Login.css";
-import axios from 'axios';
 
 export default function Login({ handleSignIn }) {
 
-  // handleLogin: [Express JS]
+  const [username] = useState("Admin-library");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  // 🔹 Handle Login
   const handleLogin = async () => {
+    if (!password) {
+      setError("Please enter password");
+      return;
+    }
 
-    try{
-      var username = document.getElementById("username").value;
-      var password = document.getElementById("password").value;
+    try {
+      const result = await axios.post(
+        "http://localhost:5002/api/library_admin_login",
+        { username, password }
+      );
 
-
-    // express code goes here...
-     const result  = await axios.post('http://localhost:5002/api/library_admin_login' ,{ username , password });
-       
-      console.log(result.data.success);
-      // console.log(result);
-      console.log(result.data.success);
       if (result.data.success) {
         handleSignIn(true, username);
+      } else {
+        setError("Invalid password");
       }
-      handleSignIn(true, username)
 
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Server error. Try again.");
     }
-    catch (error) {
-        console.error("Login error:", error);
-    }
-        
-   
-  }
+  };
 
- /// handleClear:
+  // 🔹 Clear Fields
   const handleClear = () => {
-    document.getElementById("username").value = "";
-    document.getElementById("password").value = "";
-  }
-
-  // handleEnter:
-  const handleEnter = (e) => {
-    if (e.key === 'Enter') handleLogin();
-  }
+    setPassword("");
+    setError("");
+  };
 
   return (
-    <div className='imgContainer'>
-      <div className='imgCover'>
-        <div className='loginContainer'>
-          <div className="logInBrand">NotifyU-Admins | Library</div>
-          <input className='inputs' onKeyDown={handleEnter} id="username" type='text' value="Admin-library" readOnly></input>
-          <input className='inputs' onKeyDown={handleEnter} id="password" type='password' placeholder='password'></input>
-          <div className="btnBG">
-            <button className='buttons' onClick={handleClear}>Clear</button>
-            <button className='buttons' onClick={handleLogin}>login</button>
+    <div className="imgContainer">
+      <div className="imgCover">
+        <div className="loginContainer">
+
+          <div className="logInBrand">
+            NotifyU-Admins | Library
           </div>
+
+          <input
+            className="inputs"
+            type="text"
+            value={username}
+            readOnly
+          />
+
+          <input
+            className="inputs"
+            type="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+          />
+
+          <div className="btnBG">
+            <button className="buttons" onClick={handleClear}>
+              Clear
+            </button>
+            <button className="buttons" onClick={handleLogin}>
+              Login
+            </button>
+          </div>
+
+          {error && (
+            <div style={{ color: "red", marginTop: "10px" }}>
+              {error}
+            </div>
+          )}
+
         </div>
       </div>
     </div>
-  )
+  );
 }

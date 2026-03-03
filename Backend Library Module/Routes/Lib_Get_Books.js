@@ -1,34 +1,18 @@
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express");
 const router = express.Router();
+const LibraryBookInfoTable = require("../models/library_Books_Info");
 
-const Lib_Books = require('../models/library_Books_Info');
+// ✅ Correct route name and method
+router.get("/get_books", async (req, res) => {
+  try {
+    const books = await LibraryBookInfoTable.find();
+    console.log("Books fetched:", books);
+    res.json(books);
 
-router.post('/get_books' , async (req, res) => {
-
-
-    try{
-
-        const result = await Lib_Books.find({},{ _id: 0, bookid: 1, name: 1, author: 1 });
-
-        // console.log("result", result);
-
-        const resultArray = result.map(item => [item.bookid, item.name, item.author]);
-
-        console.log(typeof(resultArray));
-        if(result)
-        {
-            res.send(resultArray);
-        }
-        else
-        {
-            res.json({succcess: false });
-        }  
-    }
-    catch(err){
-        console.log("Error Occured");
-    }
-
-})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching books" });
+  }
+});
 
 module.exports = router;
