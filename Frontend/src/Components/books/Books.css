@@ -1,13 +1,14 @@
 *{
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 body{
     background: #dcf3fd;
 }
 
 .booksParent{
-    height: 100vh;
+    min-height: 100vh;
     width: 100%;
     margin: auto;
     background: #ffffff;
@@ -25,15 +26,16 @@ body{
     display: none;
 }
 .booksContainer{
-    height: 752px;
+    min-height: 100vh;
     width: 100%;
     margin: auto;
     background: #001821c2;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-content: flex-start;
     overflow-y: auto;
-
+    padding-bottom: 40px;
 }
 .booksContainer::-webkit-scrollbar{
     display: none;
@@ -195,6 +197,7 @@ body{
     border: none;
     background: none;
     border-bottom: 1px solid orange;
+    color: white;
 }
 .or{
     height: 20px;
@@ -205,11 +208,11 @@ body{
     justify-content: center;
 }
 
-
-
+/* ── Books Table ── */
 .showAllBooksContainer{
-    height: 500px;
-    width: 1000px;
+    height: fit-content;
+    width: 100%;
+    max-width: 1000px;
     margin-top: 60px;
     margin-left: 12px;
     margin-right: 12px;
@@ -235,28 +238,48 @@ body{
     width: 100%;
     background: #00000046;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
-.headerBookID, .headerBookName, .headerBookAuthor{
-    flex: 1;
+.headerBookID{
+    flex: 0 0 22%;
     height: 100%;
     background: rgba(27, 27, 27, 0.311);
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     font-size: 17px;
     color: rgb(255, 210, 132);
+    padding: 0 4px;
+}
+.headerBookName{
+    flex: 0 0 48%;
+    height: 100%;
+    background: rgba(27, 27, 27, 0.311);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    color: rgb(255, 210, 132);
+    padding: 0 4px;
+}
+.headerBookAuthor{
+    flex: 0 0 30%;
+    height: 100%;
+    background: rgba(27, 27, 27, 0.311);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    color: rgb(255, 210, 132);
+    padding: 0 4px;
 }
 
 .tableContainer{
-    height: 400px;
+    max-height: 400px;
     width: 100%;
     border-bottom-right-radius: 12px;
     border-bottom-left-radius: 12px;
     overflow-y: auto;
-    display: flex;
-    flex-wrap: wrap;
     background: #0000001d;
 }
 .tableContainer::-webkit-scrollbar{
@@ -265,24 +288,77 @@ body{
 
 table{
     width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
 }
 tbody{
     width: 100%;
 }
 .datarow {
-    height: 40px;
-    display: flex;
-    flex-wrap: nowrap; /* prevent wrapping of cells */
-    border-bottom: 1px solid white;
+    width: 100%;
+    display: table-row;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+.datarow:last-child {
+    border-bottom: none;
 }
 
-.dataID, .dataName, .dataAuthor {
-    flex: 1 1 33%; /* flex-grow, flex-shrink, flex-basis */
-    min-width: 80px; /* ensures text does not overlap */
+.dataID {
+    width: 22%;
+    padding: 10px 6px;
     text-align: center;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
+    vertical-align: middle;
     color: rgb(207, 207, 207);
+    word-break: break-word;
+    font-size: 14px;
+}
+.dataName {
+    width: 48%;
+    padding: 10px 6px;
+    text-align: center;
+    vertical-align: middle;
+    color: rgb(207, 207, 207);
+    word-break: break-word;
+    font-size: 14px;
+}
+.dataAuthor {
+    width: 30%;
+    padding: 10px 6px;
+    text-align: center;
+    vertical-align: middle;
+    color: rgb(207, 207, 207);
+    word-break: break-word;
+    font-size: 14px;
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 600px) {
+    .addBookContainer, .removeBookContainer {
+        width: calc(100% - 24px);
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+
+    .showAllBooksContainer {
+        margin-left: 8px;
+        margin-right: 8px;
+        margin-top: 30px;
+    }
+
+    .headerBookID, .dataID {
+        font-size: 12px;
+        padding: 8px 3px;
+    }
+    .headerBookName, .dataName {
+        font-size: 12px;
+        padding: 8px 3px;
+    }
+    .headerBookAuthor, .dataAuthor {
+        font-size: 12px;
+        padding: 8px 3px;
+    }
+
+    .showBooksTitle, .addBookTitle, .removeBookTitle {
+        font-size: 18px;
+    }
 }

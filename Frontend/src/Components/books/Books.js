@@ -27,7 +27,7 @@ export default function Books() {
 
   useEffect(() => {
     fetchBooks();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 🔹 Add a Book
@@ -204,20 +204,25 @@ export default function Books() {
 
   const handleRemoveSubmit = async () => {
     let bookID = document.getElementById("removeByID").value;
-
     if (!bookID) return;
 
     const success = await removeBook(bookID);
 
     const target = document.getElementById("submitRemoveBookBG");
-    target.innerHTML = success
+    target.innerHTML = "";  // clear first
+
+    const msg = document.createElement("div");
+    msg.style.color = success ? "rgb(4, 255, 0)" : "rgb(255, 0, 0)";
+    msg.innerHTML = success
       ? `Book with ID: ${bookID} removed successfully!`
       : `Failed to remove book with ID: ${bookID}`;
+    target.appendChild(msg);
 
-    if (success) await fetchBooks(); // 🔹 Refresh list
+    if (success) await fetchBooks();
 
     setTimeout(() => {
-      target.innerHTML = `<div class='removeSubmit' onClick=${handleRemoveSubmit}>Submit</div>`;
+      target.innerHTML = "";
+      target.appendChild(setRemoveSubmit(true)); // ✅ use this instead
     }, 2000);
   };
 
